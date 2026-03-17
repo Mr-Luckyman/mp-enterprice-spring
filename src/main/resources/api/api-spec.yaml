@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: Library Management API
+  version: 1.0.0
+paths:
+  /api/books:
+    get:
+      summary: Получить список книг
+      parameters:
+        - name: author
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список книг
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      summary: Добавить новую книгу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+      responses:
+        '201':
+          description: Книга создана
+          headers:
+            Location:
+              schema:
+                type: string
+
+  /api/books/{id}:
+    get:
+      summary: Получить книгу по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Информация о книге
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Книга не найдена
+
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        author:
+          type: string
+        isbn:
+          type: string
+        publishedDate:
+          type: string
+          format: date
+        available:
+          type: boolean
+
+    CreateBookRequest:
+      type: object
+      required:
+        - title
+        - author
+        - isbn
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: string
+          minLength: 1
+          maxLength: 100
+        isbn:
+          type: string
+          pattern: '^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$'
+        publishedDate:
+          type: string
+          format: date
